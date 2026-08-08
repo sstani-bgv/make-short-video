@@ -1,0 +1,20 @@
+# Зависимости скилла make-short-video
+#
+# Базовый резак (references/cut/silence_cut.py, render_cut.py) и транскрипция
+# (references/transcribe_subs.py) — ТОЛЬКО stdlib + ffmpeg/ffprobe в PATH,
+# никакого pip не требуют.
+#
+# Дефолтный приём сырья (references/fetch.py) — загрузка по ОТКРЫТОЙ ссылке без
+# авторизации. Нужны:
+gdown>=5.0.0        # Google Drive «по ссылке» (большие файлы + страница подтверждения)
+yt-dlp>=2024.1.0    # YouTube / видеохосты
+# (прямой http(s)-URL качается на stdlib, без зависимостей)
+
+# Сториборд-план монтажа (references/storyboard.py) — превью плана ДО рендера:
+Pillow>=10.0.0      # раскладка кадров (ffmpeg их тянет) + аннотации; кириллица — DejaVu из репо
+
+# --- ОПЦИОНАЛЬНО ---
+# Только для fallback references/drive_io.py (сервисный аккаунт): приватные папки
+# Drive или заливка готового файла >50 МБ обратно на Drive. По умолчанию НЕ нужны.
+# google-api-python-client>=2.0.0
+# google-auth>=2.0.0

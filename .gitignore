@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.py[cod]
+public/jobs/
+deliverables/
+*.mp4
+*.mov
+*.mkv
+!references/assets/lut4.mp4
