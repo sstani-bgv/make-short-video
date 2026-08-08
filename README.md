@@ -25,6 +25,76 @@ Production skill for turning one selected source segment into a finished vertica
 | `references/cut/` | Optional ffmpeg-only silence-cut path. |
 | `references/assets/` | Bundled fonts and film-opening assets. |
 
+## How to adapt the visual style
+
+The skill deliberately separates the **creative contract** from the **per-video plan**. Keep the contract consistent for a series; tune the plan for each individual Short.
+
+### 1. Change the series-level design system
+
+Edit [`references/style-system.md`](references/style-system.md) when you want to change the look of every future video.
+
+| What you want to change | Where to change it | Keep in mind |
+| --- | --- | --- |
+| Brand colours | **Palette** | Keep one saturated accent on screen at a time; captions use only white + their semantic accent. |
+| Font pair | **Typography** and `references/assets/fonts/` | Supply local, licensed font files and update the renderer's `@font-face` declarations. Do not rely on system-font fallbacks. |
+| Hook appearance | **Hook title** | Define the size, position, entrance, exit, and the one optional accent word. It must stay clear of the top 220 px platform zone. |
+| Subtitle look | **Karaoke captions** | Set the primary font, size, line-height, emphasis treatment, maximum width, and vertical position. Captions should remain readable in two lines or fewer. |
+| PiP / proof treatment | **Floating card / phone mockup / full-screen b-roll** | Decide corner, size, rounding, shadow, and entry animation. Proof must be a real image or video, not a text placeholder. |
+| CTA | **CTA lock** | Choose copy, colour, placement, and entry animation. Reserve it for the final beat and replace duplicate captions during that window. |
+| Motion density | **Face tracking + semantic attention zoom** | Use 3–5 deliberate zooms per Short, each 1.03–1.08× and attached to a spoken point. |
+
+After changing the style system, update the matching Remotion composition so the implementation and documentation describe the same design.
+
+### 2. Tune one individual Short
+
+Put creative choices for one video in `plan.json`, then convert them into Remotion props. The minimum useful shape is:
+
+```json
+{
+  "hook": {"text": "НЕ ВЕДИ ОДИН ЧАТ", "accent": "один"},
+  "proofAssets": [
+    {
+      "path": "/absolute/path/to/real-proof.png",
+      "type": "image",
+      "startSeconds": 4.2,
+      "endSeconds": 7.5,
+      "placement": "top-left",
+      "source": "owned-media",
+      "semanticMatch": "Shows the alternative workflow named in the speech.",
+      "rightsNote": "Permission to use confirmed."
+    }
+  ],
+  "zooms": [
+    {"startSeconds": 1.4, "endSeconds": 2.4, "scale": 1.05, "reason": "main claim"}
+  ],
+  "focusTrack": [
+    {"atSeconds": 0, "xPercent": 50, "yPercent": 42}
+  ],
+  "cta": {"text": "save this", "startSeconds": 28}
+}
+```
+
+Use the transcript to choose the hook, the proof asset, the CTA, and the timestamps. `plan.json` is the source of truth: no random choices during rendering.
+
+### 3. Safe defaults worth preserving
+
+- Render at 1080×1920 unless a platform requires another format.
+- Keep the top 220 px and right 140 px free for platform UI; end all text above y=1500.
+- Use real source media for b-roll and record its source, semantic relevance, and rights note.
+- Suppress any burned-in source subtitles before adding new captions.
+- Do not overlap a zoom peak with a PiP entrance, split-screen transition, or CTA.
+- Before publishing a new style, render stills for hook, captions, proof, zoom, CTA, and the final frame, then complete `references/qa-loop.md`.
+
+### 4. What belongs where
+
+| Change | Right place |
+| --- | --- |
+| New brand or visual language | `references/style-system.md` + Remotion composition |
+| New hook, proof, timing, zooms, CTA | `plan.json` / input props |
+| New source clip | Job folder (`public/jobs/<job-id>/`) |
+| New transcription provider or caption segmentation | `references/transcribe_subs.py` |
+| New acceptance rule | `SKILL.md` and `references/qa-loop.md` |
+
 ## Requirements
 
 - Python 3.10+ and `ffmpeg`/`ffprobe`.
